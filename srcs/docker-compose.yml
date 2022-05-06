@@ -1,0 +1,21 @@
+version: "3"
+services:
+        nginx:
+                build:
+                        context: ./requirement/nginx/
+                        dockerfile:
+                                Dockerfile
+                ports:
+                         - 443:443
+                environment:
+                        - AUTOINDEX=on
+                init: true
+                networks:
+                        docker_network:
+                                ipv4_address: 192.168.0.12
+networks:
+        docker_network:
+                ipam:
+                        driver: default
+                        config:
+                                - subnet: "192.168.0.0/24"

@@ -1,0 +1,32 @@
+server {
+  listen 80;
+  listen [::]:80;
+  server_name localhost;
+  root /var/www/adylews/;
+  return 301 https://$server_name$request_uri;
+}
+
+server {
+  listen 443 ssl;
+  listen [::]:443 ssl;
+
+  server_name localhost;
+
+  root /var/www/adylews/;
+
+  index index.php index.html index.htm index.nginx.debian.html;
+
+  ssl on;
+  ssl_certificate /root/.local/share/mkcert/adylews.pem;
+  ssl_certificate_key /root/.local/share/mkcert/adylews-key.pem;
+
+  location / {
+    autoindex on;
+    try_files $uri $uri/ /index.php?$args;
+  }
+
+  location ~ \.php$ {
+    include snippets/fastcgi-php.conf;
+    fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+  }
+}
