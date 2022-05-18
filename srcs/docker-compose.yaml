@@ -1,0 +1,70 @@
+version: "3"
+networks:
+        frontend:
+        backend:
+        server:
+volumes:
+        wp_volume:
+                driver: local
+                driver_opts:
+                        type: volume
+                        o: 'bind'
+                        device: '/home/adylewsk/data/wordpress'
+        mariadb_volume:
+                driver: local
+                driver_opts:
+                        type: volume
+                        o: 'bind'
+                        device: '/home/adylewsk/data/mariadb'
+services:
+        mariadb:
+                container_name: mariadb
+                build:
+                        context: ./requirement/mariadb/
+                        dockerfile:
+                                Dockerfile
+                # ports:
+                        #  - 3306:3306
+                init: true
+                networks:
+                        - backend
+                env_file: .env
+                volumes:
+                        - mariadb_volume:/var/lib/mysql
+                restart: always
+        nginx:
+                container_name: nginx
+                build:
+                        context: ./requirement/nginx/
+                        dockerfile:
+                                Dockerfile
+                ports:
+                         - 443:443
+                environment:
+                        - AUTOINDEX=on
+                init: true
+                networks:
+                        - server
+                env_file: .env
+                depends_on:
+                        - mariadb
+                volumes:
+                        - wp_volume:/var/www/
+                restart: always
+        wordpress:
+                container_name: wordpress
+                build:
+                        context: ./requirement/wordpress/
+                        dockerfile:
+                                Dockerfile
+                init: true
+                networks:
+                        - frontend
+                        - server
+                        - backend
+                env_file: .env
+                depends_on:
+                        - nginx
+                volumes:
+                        - wp_volume:/var/www/
+                restart: always
