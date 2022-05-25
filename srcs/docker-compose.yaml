@@ -23,8 +23,6 @@ services:
                         context: ./requirement/mariadb/
                         dockerfile:
                                 Dockerfile
-                # ports:
-                        #  - 3306:3306
                 init: true
                 networks:
                         - backend

@@ -1,4 +1,12 @@
 #!/usr/bin/env sh
+set -xv
+FILE=/var/lib/mysql/.tmp
+#if [ ! -f "$FILE" ]
+#then
 service mysql start
-eval "echo \"$(cat /tmp/database_conf.sql)\"" | mariadb
-mysqld_safe
+envsubst < /tmp/database_conf.sql > /tmp.sql
+mysql < /tmp.sql
+service mysql stop
+touch /var/lib/mysql/.tmp
+#fi
+exec mysqld_safe
